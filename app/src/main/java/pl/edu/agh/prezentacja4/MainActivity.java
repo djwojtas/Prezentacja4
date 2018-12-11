@@ -17,16 +17,20 @@ import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
+//https://developer.android.com/guide/topics/providers/content-provider-basics
+//ewentualnie https://developer.android.com/guide/components/loaders ale raczej starczy czytac todo
+
 @SuppressWarnings("deprecation")
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class MainActivity extends AppCompatActivity { //todo implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private String[] mColumnProjection = new String[]{
             ContactsContract.Contacts.DISPLAY_NAME_PRIMARY,
-            ContactsContract.Contacts.HAS_PHONE_NUMBER};
+            //todo dodac kolumnę HAS_PHONE_NUMBER
+            };
 
-    String mSelectionClause = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " LIKE ?";
-    String[] mSelectionArgs = {"%a%"};
-    String mSortOrder = ContactsContract.Contacts.DISPLAY_NAME_PRIMARY + " ASC";
+    String mSelectionClause = ""; //todo nazwa kolumny (enum wyżej) + zapytanie LIKE sql
+    String[] mSelectionArgs = {""}; //todo argument dla LIKE
+    String mSortOrder = ""; //todo nazwa kolumny i sortowanie ASC/DESC
 
     private boolean firstTimeLoaded = false;
 
@@ -38,46 +42,44 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         Button loadDataButton = findViewById(R.id.loadDataButton);
         loadDataButton.setOnClickListener(this::loadData);
 
-        requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 1);
+        //todo odkomentować to - jest to runtimowe zapytanie o uprawnienia od marshmallowa. Dodatkowo uncomment w xmlu
+        //requestPermissions(new String[]{Manifest.permission.READ_CONTACTS}, 1);
     }
 
     private void loadData(View view) {
         if(firstTimeLoaded){
-            getSupportLoaderManager().initLoader(0, null, this);
+            //todo init loadera
             firstTimeLoaded = true;
         }else{
-            getSupportLoaderManager().restartLoader(0, null, this);
+            //todo restart loadera
         }
     }
 
     @NonNull
-    @Override
+    //@Override
     public Loader<Cursor> onCreateLoader(int i, @Nullable Bundle bundle) {
-        return new CursorLoader(MainActivity.this, ContactsContract.Contacts.CONTENT_URI,
-                mColumnProjection,
-                mSelectionClause,
-                mSelectionArgs,
-                mSortOrder);
+        //todo zwrocic instancje cursorLoadera z przekazanymi polami
+        return null;
     }
 
-    @Override
+    //@Override
     public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor cursor) {
         TableLayout contactsTableLayout = findViewById(R.id.contactsTableLayout);
         contactsTableLayout.removeAllViews();
 
         if (cursor != null && cursor.getCount() > 0) {
-            cursor.moveToFirst();
+            //todo przesunac kursor do poczatku
 
             do {
-                addTwoColumnRow(cursor.getString(0), cursor.getString(1), contactsTableLayout);
-            } while (cursor.moveToNext());
+                addTwoColumnRow(/*pobrac informacje z 1 kolumny*/"", /*i z drugiej*/"", contactsTableLayout);
+            } while (false/*todo przejsc do kolejnego elementu kursora*/);
         } else {
             TableRow tableRow = addTableRow(contactsTableLayout);
             addTextView("ADD CONTACTS IN YOUR EMULATOR TO VIEW", tableRow);
         }
     }
 
-    @Override
+    //@Override
     public void onLoaderReset(@NonNull Loader<Cursor> loader) {}
 
     private void addTwoColumnRow(String firstColumn, String secondColumn, ViewGroup parent) {
